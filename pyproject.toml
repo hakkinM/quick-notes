@@ -12,6 +12,21 @@ dependencies = []
 [project.scripts]
 quick-notes = "quick_notes:main"
 
+[dependency-groups]
+dev = [
+    "pytest==9.2.0",
+]
+
+[tool.pytest.ini_options]
+minversion = "9.2"
+testpaths = ["tests"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--import-mode=importlib",
+]
+
 [build-system]
 requires = ["uv_build>=0.13.5,<0.14.0"]
 build-backend = "uv_build"
