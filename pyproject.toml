@@ -7,10 +7,12 @@ authors = [
     { name = "Matias Häkkinen", email = "meohakkinen@gmail.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "typer==0.29.2",
+]
 
 [project.scripts]
-quick-notes = "quick_notes:main"
+qnotes = "quick_notes:main"
 
 [dependency-groups]
 dev = [
