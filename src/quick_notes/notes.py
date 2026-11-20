@@ -1,4 +1,4 @@
-import os, glob
+import os
 from pathlib import Path
 
 ENVVAR = "QNOTES_PATH"
@@ -27,19 +27,19 @@ class NoteHandler:
         if self.root.exists():
             return
         if self.root_fallback:
-            msg = (
+            raise RootDirMissingError(
                 f"Notes directory not found: {self.root}. "
                 f"Without {ENVVAR} set, notes are stored in "
                 f"'{FALLBACK_DIR}' in the current directory."
             )
         else:
-            msg = (
+            raise RootDirMissingError(
                 f"Notes directory not found: {self.root} "
                 f"(set by {ENVVAR}). Create it or change {ENVVAR}."
             )
-        raise RootDirMissingError(msg)
 
-    def note_path(self, note_name: str, create_dir_if_missing: bool = False) -> Path:
+
+    def _note_path(self, note_name: str, create_dir_if_missing: bool = False) -> Path:
 
         if not self._sanitize_name(note_name):
             raise InvalidNoteNameError(
@@ -56,11 +56,11 @@ class NoteHandler:
 
 
     def write(self, note_name, content) -> None:
-        self.note_path(note_name,True).write_text(f"{content}\n")
+        self._note_path(note_name, True).write_text(f"{content}\n")
 
 
     def read(self, note_name: str) -> str:
-        note = self.note_path(note_name)
+        note = self._note_path(note_name)
         if note.exists():
             return note.read_text()
         else:
@@ -69,13 +69,13 @@ class NoteHandler:
                 f"Run 'list' to see existing notes."
             )
 
-    def list(self) -> None:
+    def list(self) -> list[str]:
         self._require_root()
-        for file in self.root.glob("*.md"):
-            print(file.name[0:len(file.name)-3])
+        return [file.name[0:len(file.name)-3] for file in self.root.glob("*.md")]
+
 
     def delete(self, note_name) -> None:
-        note_path = self.note_path(note_name)
+        note_path = self._note_path(note_name)
         if note_path.exists():
             note_path.unlink()
         else:

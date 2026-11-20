@@ -6,12 +6,6 @@ app = typer.Typer(help="Quick notes from the terminal.")
 
 handler = NoteHandler()
 
-@app.command()
-def hello() -> None:
-    """Say hello."""
-    print("Hello world!")
-
-
 @app.command("write")
 def write_note(note_name: str, content: str) -> None:
     """Write note"""
@@ -20,8 +14,8 @@ def write_note(note_name: str, content: str) -> None:
 @app.command("list")
 def list_notes() -> None:
     """List notes"""
-    handler.list()
-
+    for note in handler.list():
+        print(note)
 
 @app.command("read")
 def read_note(note_name: str) -> None:
