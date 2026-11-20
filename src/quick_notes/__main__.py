@@ -26,7 +26,7 @@ def list_notes() -> None:
 @app.command("read")
 def read_note(note_name: str) -> None:
     """Read note"""
-    handler.read(note_name)
+    print(f"Content: {handler.read(note_name)}")
 
 
 @app.command("delete")

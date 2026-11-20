@@ -15,41 +15,83 @@ class NoteHandler:
             self.root = Path.cwd() / FALLBACK_DIR
             self.root_fallback = True
 
-    def sanitize_name(self, name: str) -> bool:
-        name = name.strip()
+    def _sanitize_name(self, note_name: str) -> bool:
+        note_name = note_name.strip()
         return (
-            bool(name)
-            and not name.startswith(".")
-            and not (INVALID_CHARS & set(name))
+            bool(note_name)
+            and not note_name.startswith(".")
+            and not (INVALID_CHARS & set(note_name))
         )
+
+    def _require_root(self) -> None:
+        if self.root.exists():
+            return
+        if self.root_fallback:
+            msg = (
+                f"Notes directory not found: {self.root}. "
+                f"Without {ENVVAR} set, notes are stored in "
+                f"'{FALLBACK_DIR}' in the current directory."
+            )
+        else:
+            msg = (
+                f"Notes directory not found: {self.root} "
+                f"(set by {ENVVAR}). Create it or change {ENVVAR}."
+            )
+        raise RootDirMissingError(msg)
+
+    def note_path(self, note_name: str, create_dir_if_missing: bool = False) -> Path:
+
+        if not self._sanitize_name(note_name):
+            raise InvalidNoteNameError(
+                f"Invalid note name {note_name!r}: names must not be empty, "
+                f"start with '.', or contain any of: {' '.join(sorted(INVALID_CHARS))}"
+            )
+
+        if create_dir_if_missing:
+            self.root.mkdir(parents=True, exist_ok=True)
+        else:
+            self._require_root()
+
+        return Path(self.root / f"{note_name}.md")
 
 
     def write(self, note_name, content) -> None:
-        if self.root_fallback:
-            try:
-                self.root.mkdir()
-                print("Directory created")
-            except FileExistsError:
-                print("Directory already exists")
-
-        print(f"Writing")
-        Path(self.root / f"{note_name}.md").write_text(f"{content}\n")
+        self.note_path(note_name,True).write_text(f"{content}\n")
 
 
-    def read(self, note_name: str) -> None:
-        print("Reading")
-        try:
-            content = Path(self.root / f"{note_name}.md").read_text()
-            print("Read note. Content: " + content)
-        except FileNotFoundError:
-            print("Note not found")
+    def read(self, note_name: str) -> str:
+        note = self.note_path(note_name)
+        if note.exists():
+            return note.read_text()
+        else:
+            raise NoteNotFoundError(
+                f"Note {note_name!r} not found in {self.root}. "
+                f"Run 'list' to see existing notes."
+            )
 
     def list(self) -> None:
-        print(f"Listing")
+        self._require_root()
         for file in self.root.glob("*.md"):
-            print(file.name)
-
+            print(file.name[0:len(file.name)-3])
 
     def delete(self, note_name) -> None:
-        print(f"Deleting")
-        Path(self.root / f"{note_name}.md").unlink()
+        note_path = self.note_path(note_name)
+        if note_path.exists():
+            note_path.unlink()
+        else:
+            raise NoteNotFoundError(
+                f"Note {note_name!r} not found in {self.root}. "
+                f"Run 'list' to see existing notes."
+            )
+
+class NoteError(Exception):
+    """Base class for all quick-notes errors."""
+
+class InvalidNoteNameError(NoteError):
+    """The note name failed validation."""
+
+class RootDirMissingError(NoteError):
+    """The notes directory does not exist."""
+
+class NoteNotFoundError(NoteError):
+    """No note with the given name exists."""

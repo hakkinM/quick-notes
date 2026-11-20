@@ -21,7 +21,7 @@ def handler(monkeypatch, tmp_path):
     ],
 )
 def test_sanitize_name_accepts_valid(handler, name):
-    assert handler.sanitize_name(name) is True
+    assert handler._sanitize_name(name) is True
 
 
 @pytest.mark.parametrize(
@@ -49,4 +49,4 @@ def test_sanitize_name_accepts_valid(handler, name):
     ],
 )
 def test_sanitize_name_rejects_invalid(handler, name):
-    assert handler.sanitize_name(name) is False
+    assert handler._sanitize_name(name) is False
