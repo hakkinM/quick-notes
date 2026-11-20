@@ -13,10 +13,9 @@ def hello() -> None:
 
 
 @app.command("write")
-def write_note(name: str, content: str) -> None:
+def write_note(note_name: str, content: str) -> None:
     """Write note"""
-    handler.write()
-
+    handler.write(note_name, content)
 
 @app.command("list")
 def list_notes() -> None:
@@ -25,15 +24,15 @@ def list_notes() -> None:
 
 
 @app.command("read")
-def read_note(name: str) -> None:
+def read_note(note_name: str) -> None:
     """Read note"""
-    handler.read()
+    handler.read(note_name)
 
 
 @app.command("delete")
-def delete_note(name: str) -> None:
+def delete_note(note_name: str) -> None:
     """Delete note"""
-    handler.delete()
+    handler.delete(note_name)
 
 
 def main() -> None:

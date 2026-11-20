@@ -1,4 +1,4 @@
-import os
+import os, glob
 from pathlib import Path
 
 ENVVAR = "QNOTES_PATH"
@@ -24,14 +24,32 @@ class NoteHandler:
         )
 
 
-    def write(self) -> None:
-        print(f"Writing")
+    def write(self, note_name, content) -> None:
+        if self.root_fallback:
+            try:
+                self.root.mkdir()
+                print("Directory created")
+            except FileExistsError:
+                print("Directory already exists")
 
-    def read(self) -> None:
-        print(f"Reading")
+        print(f"Writing")
+        Path(self.root / f"{note_name}.md").write_text(f"{content}\n")
+
+
+    def read(self, note_name: str) -> None:
+        print("Reading")
+        try:
+            content = Path(self.root / f"{note_name}.md").read_text()
+            print("Read note. Content: " + content)
+        except FileNotFoundError:
+            print("Note not found")
 
     def list(self) -> None:
         print(f"Listing")
+        for file in self.root.glob("*.md"):
+            print(file.name)
 
-    def delete(self) -> None:
+
+    def delete(self, note_name) -> None:
         print(f"Deleting")
+        Path(self.root / f"{note_name}.md").unlink()
