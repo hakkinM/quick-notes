@@ -1,6 +1,6 @@
 # quick-notes
 
-Quick-notes is a simple python tool for managing .md formatted notes. The project includes a CLI tool made with **Typer** and an MCP server made with **FastMCP**. The project also includes tests for the NoteHandler class from notes.py, which are also utilized in CI/CD pipeline run via GitHub Actions.
+Quick-notes is a simple python tool for managing .md formatted notes. The project includes a CLI tool made with **Typer** and an MCP server made with **FastMCP**. The project also includes tests for the NoteHandler class from notes.py, which are also utilized in a GitHub Actions workflow.
 
 ## Tools
 
