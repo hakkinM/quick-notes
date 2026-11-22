@@ -1,6 +1,10 @@
-import typer
+import typer, logging
 
 from quick_notes.notes import NoteHandler
+
+logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
+
+logger = logging.getLogger(__name__)
 
 app = typer.Typer(help="Quick notes from the terminal.")
 
