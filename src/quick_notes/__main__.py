@@ -19,13 +19,12 @@ def write_note(note_name: str, content: str) -> None:
 def list_notes() -> None:
     """List notes"""
     for note in handler.list():
-        print(note)
+        typer.echo(note)
 
 @app.command("read")
 def read_note(note_name: str) -> None:
     """Read note"""
-    print(f"Content: {handler.read(note_name)}")
-
+    typer.echo(f"Content: {handler.read(note_name)}")
 
 @app.command("delete")
 def delete_note(note_name: str) -> None:
